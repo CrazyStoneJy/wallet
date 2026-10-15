@@ -6,8 +6,7 @@ import {
     Keyboard,
     ToastAndroid,
     SectionList,
-    TouchableOpacity,
-    TextInput
+    TouchableOpacity
 } from "react-native";
 import {
     useCallback,
@@ -33,6 +32,7 @@ import {
 } from "./action";
 import sqliteHelper from "../../db/internal/sqlite_helper";
 import { CostType, TABLE_COST } from "../../db/consts";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import costStorageManager from "../../db/cost_storage_manager";
 import { safeParseFloat } from "../../utils/safe_invoker";
 import FlexableBottomSheet, {
@@ -126,20 +126,8 @@ function HomePage() {
                     data: result || [],
                 },
             });
-        })
-        const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-            xLog.log("Keyboard Shown");
-            // @ts-ignore
-            bottomSheetRef.current?.snapToIndex(1);
-        });
-        const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-            xLog.log("Keyboard Hidden");
-            // @ts-ignore
-            bottomSheetRef.current?.snapToIndex(0);
         });
         return () => {
-            showSubscription.remove();
-            hideSubscription.remove();
             sqliteHelper && sqliteHelper.close();
         };
     }, []);
@@ -298,7 +286,7 @@ function HomePage() {
                         }}
                     >
                         <Text>描述：</Text>
-                        <TextInput
+                        <BottomSheetTextInput
                             placeholder="请输入"
                             value={desc}
                             onSubmitEditing={Keyboard.dismiss}

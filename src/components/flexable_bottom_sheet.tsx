@@ -1,4 +1,4 @@
-import BottomSheet, { BottomSheetView, TouchableOpacity } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, TouchableOpacity } from '@gorhom/bottom-sheet';
 import {useCallback, useMemo, useRef, useState} from 'react';
 import {Button, Keyboard, KeyboardAvoidingView, Text, View, useWindowDimensions} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -116,12 +116,19 @@ function FlexableBottomSheet(props: FlexableBottomSheetProps) {
                     handleIndicatorStyle={{ backgroundColor: '#8F8F8F', height: 4, width: 34 }}
                     enablePanDownToClose={true}
                     enableContentPanningGesture={false}
+                    keyboardBehavior="extend"
+                    keyboardBlurBehavior="restore"
+                    android_keyboardInputMode="adjustResize"
                     onClose={() => {
                         _close();
                     }}
                     {...getConfigByType()}
                 >
-                    <BottomSheetView>
+                    <BottomSheetScrollView
+                        keyboardShouldPersistTaps="handled"
+                        keyboardDismissMode="interactive"
+                        contentContainerStyle={{ paddingBottom: 24 }}
+                    >
                         <View 
                             onLayout={(e: any) => {
                                 const { nativeEvent } = e || {};
@@ -132,7 +139,7 @@ function FlexableBottomSheet(props: FlexableBottomSheetProps) {
                         }}>
                             {children}
                         </View>
-                    </BottomSheetView>
+                    </BottomSheetScrollView>
                 </BottomSheet>
             </View>
         </GestureHandlerRootView>
