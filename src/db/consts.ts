@@ -21,6 +21,9 @@ enum TABLE_COST_INFO {
 enum CostType {
     SHOPPING = 1,
     TRANSPORT = 2,
+    FOOD = 3,
+    ENTERTAINMENT = 4,
+    OTHER = 5,
 }
 
 enum CostState {

@@ -37,7 +37,7 @@ function CostStorageManager() {
     }
 
     function queryAll(): Promise<any> {
-        const sqlString = `SELECT * from ${TABLE_COST} ORDER BY timestamp DESC;`;
+        const sqlString = `SELECT * from ${TABLE_COST} WHERE state != ${CostState.DELETEd} ORDER BY timestamp DESC;`;
         return dao.queryData(sqlString, []).then((results: any) => {
             let array = [];
             const { rows } = results || {};
@@ -60,6 +60,15 @@ function CostStorageManager() {
         });
     }
 
+    function updateById(enity: CostEnity): Promise<any> {
+        if (!enity || !is_id(enity.id)) {
+            return Promise.reject('entity id is invalid');
+        }
+        const desc = String(enity.desc || '').replace(/"/g, '""');
+        const sqlString = `UPDATE ${TABLE_COST} SET ${TABLE_COST_INFO.COST} = ${enity.cost}, ${TABLE_COST_INFO.DESC} = "${desc}", ${TABLE_COST_INFO.TYPE} = ${enity.type}, ${TABLE_COST_INFO.TIMESTAMP} = ${enity.timestamp}, ${TABLE_COST_INFO.STATE} = ${CostState.UPDATED} WHERE ${TABLE_COST_INFO.ID} = ${enity.id};`;
+        return dao.updateData(sqlString);
+    }
+
     /**
      * represent it that make `state` to 
      */
@@ -75,6 +84,7 @@ function CostStorageManager() {
         createTable,
         insert,
         queryAll,
+        updateById,
         deleteById
     }
 

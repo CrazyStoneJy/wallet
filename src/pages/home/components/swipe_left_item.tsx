@@ -1,25 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import Animated from "react-native-reanimated";
-import { color_green, color_primary, color_red } from "../../../colors";
+import { color_green, color_green_dark, color_green_light, color_red } from "../../../colors";
+import { CostType } from "../../../db/consts";
 import { font_size_14 } from "../../../dp";
 
 interface LeftSwipeItemProps {
     onLeftSwipe?: Function;
+    onEdit?: (item: any) => void;
+    onDelete?: (item: any) => void;
     item: any;
     index: number;
 }
 
 function LeftSwipeItem(props: LeftSwipeItemProps) {
-    const { item, index } = props;
-    const { desc, cost, id } = item || {};
+    const { item, index, onEdit, onDelete } = props;
+    const { desc, cost, id, type } = item || {};
     const swiperableRef = useRef(null);
-
-    useEffect(() => {
-        console.log("item: ", item);
-    }, []);
 
     function renderRightActions(
         progress: Animated.AnimatedInterpolation<number>,
@@ -30,22 +29,38 @@ function LeftSwipeItem(props: LeftSwipeItemProps) {
                 <TouchableOpacity
                     style={styles.style_right_action_item_container}
                     activeOpacity={0.8}
+                    onPress={() => onEdit && onEdit(item)}
                 >
-                    <Text style={styles.style_right_action_text}>edit</Text>
+                    <Text style={styles.style_right_action_text}>编辑</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.style_right_action_item_container}
                     activeOpacity={0.8}
-                    onPress={deleteAction}
+                    onPress={() => onDelete && onDelete(item)}
                 >
-                    <Text style={styles.style_right_action_text}>delete</Text>
+                    <Text style={styles.style_right_action_text}>删除</Text>
                 </TouchableOpacity>
             </View>
         );
     }
 
     function deleteAction() {}
+
+    function getTypeLabel() {
+        switch (type) {
+            case CostType.SHOPPING:
+                return "购物";
+            case CostType.TRANSPORT:
+                return "交通";
+            case CostType.FOOD:
+                return "餐饮";
+            case CostType.ENTERTAINMENT:
+                return "娱乐";
+            default:
+                return "其他";
+        }
+    }
 
     function close() {
         if (swiperableRef.current) {
@@ -66,10 +81,13 @@ function LeftSwipeItem(props: LeftSwipeItemProps) {
                 overshootRight={false}
             >
                 <View style={styles.style_item_container} key={`item_${index}`}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ marginLeft: 15 }}>{desc}</Text>
+                    <View style={styles.typeBadge}>
+                        <Text style={styles.typeBadgeText}>{getTypeLabel()}</Text>
                     </View>
-                    <Text style={{ marginRight: 10 }}>{"-" + cost}</Text>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.descText}>{desc || "未填写备注"}</Text>
+                    </View>
+                    <Text style={styles.costText}>{"- ¥ " + Number(cost || 0).toFixed(2)}</Text>
                 </View>
             </Swipeable>
         </GestureHandlerRootView>
@@ -90,7 +108,34 @@ const styles = StyleSheet.create({
         height: 50,
         width: "100%",
         alignItems: "center",
-        backgroundColor: color_primary,
+        backgroundColor: "white",
+        borderBottomColor: "#E5EFE8",
+        borderBottomWidth: StyleSheet.hairlineWidth,
+    },
+    typeBadge: {
+        alignItems: "center",
+        backgroundColor: color_green_light,
+        borderRadius: 14,
+        justifyContent: "center",
+        marginLeft: 14,
+        marginRight: 12,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+    },
+    typeBadgeText: {
+        color: color_green_dark,
+        fontSize: 12,
+        fontWeight: "600",
+    },
+    descText: {
+        color: "#385442",
+        fontSize: 15,
+    },
+    costText: {
+        color: color_green_dark,
+        fontSize: 15,
+        fontWeight: "600",
+        marginRight: 16,
     },
     style_right_action_item_container: {
         flexDirection: "row",

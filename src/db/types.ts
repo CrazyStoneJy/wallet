@@ -1,3 +1,5 @@
+import { CostType } from "./consts";
+
 export type CostEnity = {
     timestamp: number;
     cost: number;

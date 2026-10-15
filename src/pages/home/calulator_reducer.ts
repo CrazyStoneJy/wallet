@@ -1,7 +1,8 @@
 import { Action } from "../../types/action";
+import { CostType } from "../../db/consts";
 import xLog from "../../utils/logs";
 import { safeParseFloat } from "../../utils/safe_invoker";
-import { ACTION_ADD_COST_ITEM, ACTION_CHANGE_DESC, ACTION_HOME_DEAL_INPUT, ACTION_INIT_COST_MONEY, ACTION_REFRESH_COST_LIST, ACTION_REFRESH_DIGITAL_INPUT_STATE } from "./action";
+import { ACTION_ADD_COST_ITEM, ACTION_CHANGE_COST_TYPE, ACTION_CHANGE_DESC, ACTION_HOME_DEAL_INPUT, ACTION_INIT_COST_MONEY, ACTION_REFRESH_COST_LIST, ACTION_REFRESH_DIGITAL_INPUT_STATE, ACTION_START_EDIT_COST_ITEM } from "./action";
 import { GridType } from "./components/digital_input";
 
 export enum DoneButtonState {
@@ -27,10 +28,31 @@ export default function reducer(state: any, action: Action) {
             const { isShow } = payload || {};
             return { ...state, isShowDigitalInput: isShow };
         case ACTION_INIT_COST_MONEY:
-            return { ...state, costMoney: ''};
+            return {
+                ...state,
+                costMoney: '',
+                desc: '',
+                costType: CostType.SHOPPING,
+                editingId: null,
+                doneButtonState: DoneButtonState.DONE,
+            };
         case ACTION_CHANGE_DESC:
             const { desc } = payload || {};
             return { ...state, desc };
+        case ACTION_CHANGE_COST_TYPE:
+            const { costType } = payload || {};
+            return { ...state, costType };
+        case ACTION_START_EDIT_COST_ITEM:
+            const { item } = payload || {};
+            return {
+                ...state,
+                costMoney: String(item.cost || ""),
+                desc: item.desc || "",
+                costType: item.type,
+                editingId: item.id,
+                isShowDigitalInput: true,
+                doneButtonState: DoneButtonState.DONE,
+            };
     }
 }
 
